@@ -15,8 +15,6 @@ import reactor.core.publisher.Mono;
 public class CreditController {
 
     @Autowired
-    private ICreditRepository oCreditRep;
-    @Autowired
     private CreditService creditService;
 
     /**
