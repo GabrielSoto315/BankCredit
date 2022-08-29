@@ -16,7 +16,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @ExtendWith(SpringExtension.class)
 public class CreditServiceTest {
@@ -70,6 +71,44 @@ public class CreditServiceTest {
                     .verifyComplete();
         }
 
+        @Test
+        void updateTest() {
+
+            Credit client = CreditMock.randomAccount();
+
+            Mockito.when(creditRepository.existsById("25210000000004"))
+                    .thenReturn(Mono.just(true));
+
+            Mockito.when(creditRepository.save(client))
+                    .thenReturn(Mono.just(client));
+
+            creditServiceImp.update("25210000000004", client)
+                            .map(response -> StepVerifier.create(Mono.just(response))
+                                    .expectNextMatches(x -> x.getData() != null)
+                                    .expectComplete()
+                                    .verify());
+        }
+
+        @Test
+        void deleteTest() {
+            ResponseHandler responseHandler2 = new ResponseHandler();
+
+            ResponseHandler responseHandler = new ResponseHandler();
+            responseHandler.setMessage("Ok");
+            responseHandler.setStatus(HttpStatus.OK);
+            responseHandler.setData(null);
+
+            Mockito.when(creditRepository.existsById("25210000000004"))
+                    .thenReturn(Mono.just(true));
+
+            Mockito.when(creditRepository.deleteById("25210000000004")).thenReturn(Mono.empty());
+
+            creditServiceImp.delete("25210000000004")
+                    .map(response -> StepVerifier.create(Mono.just(response))
+                            .expectNextMatches(x -> x.getMessage().equals("Done"))
+                            .expectComplete()
+                            .verify());
+        }
 
         @Test
         void updateFoundTest() {

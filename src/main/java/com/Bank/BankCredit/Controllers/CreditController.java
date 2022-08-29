@@ -75,4 +75,14 @@ public class CreditController {
     public Mono<ResponseHandler> SaveCreditCard(@RequestBody Credit oCredit){
         return creditService.create(oCredit, "Credit Card");
     }
+
+    /**
+     * Guardar nuevo credito
+     * @param oCredit
+     * @return
+     */
+    @PostMapping()
+    public Mono<ResponseHandler> SaveCredit(@RequestBody Credit oCredit){
+        return creditService.create(oCredit, oCredit.getProduct().getName());
+    }
 }

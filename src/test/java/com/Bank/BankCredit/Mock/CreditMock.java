@@ -15,7 +15,7 @@ public class CreditMock {
     public static Credit randomAccount(){
         Credit credit = new Credit();
         credit.setId_credit_number("25210000000004");
-        credit.setClient_number(UUID.randomUUID().toString());
+        credit.setClient_number("1910000000003");
         credit.setActive(true);
         credit.setRegister_date(new Date());
         credit.setAmount(BigDecimal.valueOf(42000));
