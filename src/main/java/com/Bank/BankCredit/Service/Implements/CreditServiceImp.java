@@ -74,7 +74,7 @@ public class CreditServiceImp implements CreditService {
                                    }else {
                                        log.info("Prepare credit");
                                        oProduct.setName(product);
-                                       oProduct.setClient_type(client.getData().getType());
+                                       oProduct.setClientType(client.getData().getType());
                                        log.info(oProduct.toString());
                                        return sequenceService.getSequenceNumber(SEQUENCE_NAME).flatMap(s -> {
                                            credit.setId_credit_number(String.format("2521%010d", s));
@@ -94,7 +94,7 @@ public class CreditServiceImp implements CreditService {
                    else {
                        log.info("Prepare credit");
                        oProduct.setName(product);
-                       oProduct.setClient_type(client.getData().getType());
+                       oProduct.setClientType(client.getData().getType());
                        log.info(oProduct.toString());
                        return sequenceService.getSequenceNumber(SEQUENCE_NAME).flatMap(s -> {
                            credit.setId_credit_number(String.format("2521%010d", s));
@@ -111,7 +111,7 @@ public class CreditServiceImp implements CreditService {
                } else if (product =="Credit Card") {
 
                    oProduct.setName(product);
-                   oProduct.setClient_type(client.getData().getType());
+                   oProduct.setClientType(client.getData().getType());
                        return sequenceService.getSequenceNumber(SEQUENCE_NAME).flatMap(s -> {
                            credit.setId_credit_number(String.format("4521%010d", s));
                            credit.setActive(true);

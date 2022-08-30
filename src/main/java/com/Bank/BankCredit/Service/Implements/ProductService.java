@@ -20,7 +20,7 @@ public class ProductService {
                 .uri(url)
                 .retrieve()
                 .bodyToFlux(Product.class)
-                .filter(x -> x.getName().equals(product.getName()) && x.getClient_type().equals(product.getClient_type()));
+                .filter(x -> x.getName().equals(product.getName()) && x.getClientType().equals(product.getClientType()));
         oProductFlux.subscribe(products -> log.info(products.toString()));
         return oProductFlux.hasElements().flatMap(isAvailable -> {
             if (isAvailable){

@@ -6,5 +6,5 @@ import lombok.Data;
 public class Product {
     private String name;
     private String type;
-    private String client_type;
+    private String clientType;
 }

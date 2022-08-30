@@ -63,7 +63,8 @@ public class CreditController {
      */
    @PostMapping("CreditAccount/")
     public Mono<ResponseHandler> SaveCreditAccount(@RequestBody Credit oCredit){
-       return creditService.create(oCredit, "Credit Account");
+       Credit credit = oCredit;
+       return creditService.create(credit, "Credit Account");
     }
 
     /**
@@ -73,7 +74,8 @@ public class CreditController {
      */
     @PostMapping("CreditCard/")
     public Mono<ResponseHandler> SaveCreditCard(@RequestBody Credit oCredit){
-        return creditService.create(oCredit, "Credit Card");
+        Credit credit = oCredit;
+        return creditService.create(credit, "Credit Card");
     }
 
     /**

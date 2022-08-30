@@ -10,8 +10,8 @@ import org.springframework.data.annotation.Id;
 @NoArgsConstructor
 public class ClientPerson {
     @Id
-    private String id_client;
-    private String id_card;
-    private String first_name;
-    private String last_name;
+    private String idClient;
+    private String idCard;
+    private String firstName;
+    private String lastName;
 }

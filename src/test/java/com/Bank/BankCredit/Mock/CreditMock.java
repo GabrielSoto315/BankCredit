@@ -24,7 +24,7 @@ public class CreditMock {
 
         Product product = new Product();
         product.setName("Credit Account");
-        product.setClient_type("Person");
+        product.setClientType("Person");
 
         credit.setProduct(product);
 
@@ -43,7 +43,7 @@ public class CreditMock {
 
         Product product = new Product();
         product.setName("Credit Card");
-        product.setClient_type("Person");
+        product.setClientType("Person");
 
         credit.setProduct(product);
 

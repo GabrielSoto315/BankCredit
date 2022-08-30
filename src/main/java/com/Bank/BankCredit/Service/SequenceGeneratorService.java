@@ -34,10 +34,8 @@ public class SequenceGeneratorService {
                     .uri(url)
                     .retrieve()
                     .bodyToMono(Sequence.class);
-            sequenceMono.subscribe(client -> log.info(client.toString()));
-            return sequenceMono.flatMap(x -> {
-                return Mono.just(x.getSequence());
-            });
+            return sequenceMono.flatMap(x -> Mono.just(x.getSequence()))
+                    .doFinally(z -> log.info(z.toString()));
         }
 
 
