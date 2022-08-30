@@ -39,6 +39,7 @@ public class CreditServiceImp implements CreditService {
     public Mono<ResponseHandler> findAll() {
         return creditRepository.findAll()
                 .doOnNext(n -> log.info(n.toString()))
+                .filter(f -> f.getActive().equals(true))
                 .collectList()
                 .map(x -> new ResponseHandler("Done", HttpStatus.OK, x))
                 .onErrorResume(error -> Mono.just(new ResponseHandler(error.getMessage(), HttpStatus.BAD_REQUEST, null)));
@@ -46,10 +47,22 @@ public class CreditServiceImp implements CreditService {
 
     @Override
     public Mono<ResponseHandler> find(String id) {
-        return creditRepository.findById(id)
-                .doOnNext(n -> log.info(n.toString()))
-                .map(x -> new ResponseHandler("Done", HttpStatus.OK, x))
-                .onErrorResume(error -> Mono.just(new ResponseHandler(error.getMessage(), HttpStatus.BAD_REQUEST, null)));
+        return creditRepository.existsById(id).flatMap(exist -> {
+            if (exist){
+                return creditRepository.findById(id)
+                        .doOnNext(credit -> log.info(credit.toString()))
+                        .map(res -> {
+                            if (res.getActive()){
+                                return new ResponseHandler("Done", HttpStatus.OK, res);
+                            } else {
+                                return new ResponseHandler("Not found", HttpStatus.NOT_FOUND, null);
+                            }
+                        })
+                        .onErrorResume(error -> Mono.just(new ResponseHandler(error.getMessage(), HttpStatus.BAD_REQUEST, null)));
+            } else {
+                return Mono.just(new ResponseHandler("Not found", HttpStatus.NOT_FOUND, null));
+            }
+        });
     }
 
     @Override
