@@ -54,19 +54,22 @@ public class CreditServiceImp implements CreditService {
 
     @Override
     public Mono<ResponseHandler> create(Credit credit, String product) {
-        return clientService.FindClientTypeId(credit.getClient_number()).flatMap(client ->{
+        return clientService.FindClientTypeId(credit.getIdClient()).flatMap(client ->{
             log.info("Client" + client.toString());
            if (client.getData() == null){
                return Mono.just(new ResponseHandler("Client not found",HttpStatus.BAD_REQUEST,null));
            }else{
                log.info("Credit product : " + product);
                Product oProduct = new Product();
+               credit.setActive(true);
+               credit.setRegisterDate(new Date());
+               credit.setLastTransaction(new Date());
                if (product.equals("Credit Account")){
                    if (client.getData().getType().equals("Person")) {
                        return creditRepository.findAll()
                                .filter(x -> x.getActive().equals(true) &&
                                        x.getProduct().getName().equals("Credit Account") &&
-                                       x.getClient_number().equals(credit.getClient_number()))
+                                       x.getIdClient().equals(credit.getIdClient()))
                                .count()
                                .flatMap(c -> {
                                    if (c >= 1){
@@ -77,13 +80,10 @@ public class CreditServiceImp implements CreditService {
                                        oProduct.setClientType(client.getData().getType());
                                        log.info(oProduct.toString());
                                        return sequenceService.getSequenceNumber(SEQUENCE_NAME).flatMap(s -> {
-                                           credit.setId_credit_number(String.format("2521%010d", s));
+                                           credit.setIdCredit(String.format("2521%010d", s));
                                            log.info(credit.toString());
-                                           credit.setActive(true);
                                            credit.setProduct(oProduct);
                                            credit.setBalance(BigDecimal.ZERO);
-                                           credit.setRegister_date(new Date());
-                                           credit.setLast_transaction(new Date());
                                            log.info(credit.toString());
                                            return creditRepository.save(credit).flatMap(z -> Mono.just(new ResponseHandler("Done", HttpStatus.OK, z)));
 
@@ -97,13 +97,10 @@ public class CreditServiceImp implements CreditService {
                        oProduct.setClientType(client.getData().getType());
                        log.info(oProduct.toString());
                        return sequenceService.getSequenceNumber(SEQUENCE_NAME).flatMap(s -> {
-                           credit.setId_credit_number(String.format("2521%010d", s));
+                           credit.setIdCredit(String.format("2521%010d", s));
                            log.info(credit.toString());
-                           credit.setActive(true);
                            credit.setProduct(oProduct);
                            credit.setBalance(BigDecimal.ZERO);
-                           credit.setRegister_date(new Date());
-                           credit.setLast_transaction(new Date());
                            log.info(credit.toString());
                            return creditRepository.save(credit).flatMap(z -> Mono.just(new ResponseHandler("Done", HttpStatus.OK, z)));
                        });
@@ -113,12 +110,9 @@ public class CreditServiceImp implements CreditService {
                    oProduct.setName(product);
                    oProduct.setClientType(client.getData().getType());
                        return sequenceService.getSequenceNumber(SEQUENCE_NAME).flatMap(s -> {
-                           credit.setId_credit_number(String.format("4521%010d", s));
-                           credit.setActive(true);
+                           credit.setIdCredit(String.format("4521%010d", s));
                            credit.setProduct(oProduct);
                            credit.setBalance(credit.getAmount());
-                           credit.setRegister_date(new Date());
-                           credit.setLast_transaction(new Date());
                            return creditRepository.save(credit).flatMap(z -> Mono.just(new ResponseHandler("Done", HttpStatus.OK, z)));
                        });
                }else {
@@ -135,8 +129,8 @@ public class CreditServiceImp implements CreditService {
                 return creditRepository.findById(id)
                         .flatMap(x -> {
                             x.setBalance(credit.getBalance());
-                            x.setLast_transaction(new Date());
-                            x.setUpdate_date(new Date());
+                            x.setLastTransaction(new Date());
+                            x.setUpdateDate(new Date());
                             return creditRepository.save(x)
                                     .map(y -> new ResponseHandler("Done", HttpStatus.OK, y))
                                     .onErrorResume(error -> Mono.just(new ResponseHandler(error.getMessage(), HttpStatus.BAD_REQUEST, null)));

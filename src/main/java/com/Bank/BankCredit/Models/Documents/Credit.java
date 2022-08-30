@@ -13,16 +13,16 @@ import java.util.Date;
 @Data
 public class Credit {
     @Transient
-    public static final String SEQUENCE_NAME = "credit_sequence";
+    public static final String SEQUENCE_NAME = "creditSequence";
 
     @Id
-    private String id_credit_number;
+    private String idCredit;
     private Product product;
     private BigDecimal balance;
     private BigDecimal amount;
-    private String client_number;
+    private String idClient;
     private Boolean active;
-    private Date register_date;
-    private Date update_date;
-    private Date last_transaction;
+    private Date registerDate;
+    private Date updateDate;
+    private Date lastTransaction;
 }

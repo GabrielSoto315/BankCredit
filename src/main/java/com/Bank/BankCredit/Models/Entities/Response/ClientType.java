@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class ClientType {
     private String type;
-    private String id_client;
+    private String idClient;
 }
