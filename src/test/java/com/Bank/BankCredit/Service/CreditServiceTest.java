@@ -61,14 +61,17 @@ public class CreditServiceTest {
             responseHandler.setStatus(HttpStatus.OK);
             responseHandler.setData(debitCard);
 
+            Mockito.when(creditRepository.existsById("25210000000004"))
+                    .thenReturn(Mono.just(true));
+
             Mockito.when(creditRepository.findById("25210000000004"))
                     .thenReturn(Mono.just(debitCard));
 
-            Mono<ResponseHandler> responseHandlerMono = creditServiceImp.find("25210000000004");
-
-            StepVerifier.create(responseHandlerMono)
-                    .expectNextMatches(response -> response.getData() !=null)
-                    .verifyComplete();
+            creditServiceImp.find("25210000000004")
+                    .map(response -> StepVerifier.create(Mono.just(response))
+                            .expectNextMatches(x -> x.getData() != null)
+                            .expectComplete()
+                            .verify());
         }
 
         @Test
