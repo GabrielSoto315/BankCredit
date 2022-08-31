@@ -46,7 +46,6 @@ public class CreditControllerTest {
                 .expectStatus()
                 .isOk()
                 .expectBody(ResponseHandler.class);
-
     }
 
     @Test
@@ -113,7 +112,28 @@ public class CreditControllerTest {
                 .body(BodyInserters.fromObject(credit))
                 .exchange()
                 .expectStatus().isOk();
+    }
 
+    @Test
+    void createCardTest() {
+
+        Credit credit = CreditMock.randomCard();
+
+        ResponseHandler responseHandler = new ResponseHandler();
+        responseHandler.setMessage("Ok");
+        responseHandler.setStatus(HttpStatus.OK);
+        responseHandler.setData(credit);
+
+        Mockito
+                .when(creditService.create(credit, "Credit Card")).thenReturn(Mono.just(responseHandler));
+
+        webClient
+                .post()
+                .uri("/api/Credit/CreditCard/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromObject(credit))
+                .exchange()
+                .expectStatus().isOk();
     }
 
     @Test

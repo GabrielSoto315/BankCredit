@@ -6,8 +6,10 @@ import com.Bank.BankCredit.Repository.ICreditRepository;
 import com.Bank.BankCredit.Service.CreditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @RestController
 @RequiredArgsConstructor
@@ -62,6 +64,7 @@ public class CreditController {
      * @return
      */
    @PostMapping("CreditAccount/")
+   @CircuitBreaker(name="sequence", fallbackMethod = "fallBackSequence")
     public Mono<ResponseHandler> SaveCreditAccount(@RequestBody Credit oCredit){
        Credit credit = oCredit;
        return creditService.create(credit, "Credit Account");
@@ -73,6 +76,7 @@ public class CreditController {
      * @return
      */
     @PostMapping("CreditCard/")
+    @CircuitBreaker(name="sequence", fallbackMethod = "fallBackSequence")
     public Mono<ResponseHandler> SaveCreditCard(@RequestBody Credit oCredit){
         Credit credit = oCredit;
         return creditService.create(credit, "Credit Card");
@@ -84,7 +88,13 @@ public class CreditController {
      * @return
      */
     @PostMapping()
+    @CircuitBreaker(name="sequence", fallbackMethod = "fallBackSequence")
     public Mono<ResponseHandler> SaveCredit(@RequestBody Credit oCredit){
         return creditService.create(oCredit, oCredit.getProduct().getName());
     }
+
+    public Mono<ResponseHandler> fallBackSequence(RuntimeException runtimeException){
+        return Mono.just(new ResponseHandler("Microservice not available", HttpStatus.BAD_REQUEST,runtimeException.getMessage()));
+    }
+
 }
