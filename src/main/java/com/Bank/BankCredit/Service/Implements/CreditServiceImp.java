@@ -4,10 +4,10 @@ import com.Bank.BankCredit.Models.Documents.Credit;
 import com.Bank.BankCredit.Models.Entities.*;
 import com.Bank.BankCredit.Models.Entities.Response.Product;
 import com.Bank.BankCredit.Repository.ICreditRepository;
+import com.Bank.BankCredit.Repository.ICreditRepositoryDao;
 import com.Bank.BankCredit.Service.ClientService;
 import com.Bank.BankCredit.Service.CreditService;
 import com.Bank.BankCredit.Service.SequenceGeneratorService;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +17,21 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 import static com.Bank.BankCredit.Models.Documents.Credit.SEQUENCE_NAME;
 
 @Service
-@RequiredArgsConstructor
 public class CreditServiceImp implements CreditService {
 
     @Autowired
-    ICreditRepository creditRepository;
+    private ICreditRepository creditRepository;
     @Autowired
-    SequenceGeneratorService sequenceService;
+    private SequenceGeneratorService sequenceService;
     @Autowired
-    ClientService clientService;
+    private ClientService clientService;
 
     private static final Logger log = LoggerFactory.getLogger(CreditServiceImp.class);
 
@@ -137,13 +138,17 @@ public class CreditServiceImp implements CreditService {
 
     @Override
     public Mono<ResponseHandler> update(String id, Credit credit) {
+        log.info("Start update" + credit);
         return creditRepository.existsById(id).flatMap(check -> {
+            log.info("Check result: " +check);
             if (check) {
                 return creditRepository.findById(id)
                         .flatMap(x -> {
+                            log.info("Update data: " + x);
                             x.setBalance(credit.getBalance());
                             x.setLastTransaction(new Date());
                             x.setUpdateDate(new Date());
+                            log.info("Update data: " + x);
                             return creditRepository.save(x)
                                     .map(y -> new ResponseHandler("Done", HttpStatus.OK, y))
                                     .onErrorResume(error -> Mono.just(new ResponseHandler(error.getMessage(), HttpStatus.BAD_REQUEST, null)));
@@ -169,5 +174,7 @@ public class CreditServiceImp implements CreditService {
             }
         });
     }
+
+
 }
 
